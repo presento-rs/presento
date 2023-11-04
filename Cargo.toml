@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.4.7", features = ["derive"] }
 crossterm = "0.27.0"
+minimad = "0.13.0"
 ratatui = "0.24.0"

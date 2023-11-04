@@ -42,8 +42,12 @@ fn view(presentation: &mut Presentation, frame: &mut Frame) {
     let block = Block::new()
         .borders(Borders::ALL)
         .title(Title::from("Presento").alignment(Alignment::Center));
-    let paragraph = Paragraph::new(presentation.content());
+    let c = presentation.content().clone();
+    let paragraph = super::parser::into_paragraph(&c);
     frame.render_widget(paragraph.block(block), area);
+    // let widget = super::parser::into_widget(presentation.content());
+    // let paragraph = Paragraph::new(widget);
+    // frame.render_widget(paragraph.block(block), area);
 }
 
 // Convert Event to Message
