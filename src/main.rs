@@ -1,23 +1,7 @@
+use std::{fs::read_to_string, path::PathBuf};
+
 use clap::Parser;
-use std::{fs, fs::read_to_string, path::PathBuf};
-
-struct Presentation {
-    slides: Vec<Slide>,
-}
-
-struct Slide {
-    ctr: i32,
-    content: Vec<String>,
-}
-
-impl Slide {
-    pub fn from_lines(lines: &Vec<String>) -> Self {
-        Self {
-            ctr: 0,
-            content: vec![lines.join("\n")],
-        }
-    }
-}
+use presento::model::{Presentation, Slide};
 
 #[derive(Debug, Parser)]
 struct Cli {
@@ -47,14 +31,11 @@ fn parse_presentation(path: PathBuf) -> Presentation {
         slides.push(Slide::from_lines(&current_slide));
     }
     println! {"Found {:?} Slides", slides.len()}
-    Presentation { slides: slides }
+    Presentation::from_slides(slides)
 }
 
 fn main() {
     let args = Cli::parse();
     let presentation = parse_presentation(args.path);
-    let content = presentation.slides[1].content[0].as_str();
-    println! { "Content: {:?}", content}
-    println! {"------------------------------"}
-    termimad::print_inline(&content);
+    let _ = presento::app::run(presentation);
 }
