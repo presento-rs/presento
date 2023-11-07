@@ -3,7 +3,10 @@
 use super::model::Presentation;
 use ratatui::{
     prelude::{Alignment, CrosstermBackend, Terminal},
-    widgets::{block::Title, Block, Borders, Paragraph},
+    widgets::{
+        block::{Position, Title},
+        Block, Borders, Paragraph,
+    },
 };
 
 pub type Frame<'a> = ratatui::Frame<'a>;
@@ -26,7 +29,7 @@ fn update(presentation: &mut Presentation, msg: Message) -> Option<Message> {
             }
         }
         Message::Previous => {
-            if presentation.slide_index > 1 {
+            if presentation.slide_index > 0 {
                 presentation.slide_index -= 1;
             }
         }
@@ -37,12 +40,20 @@ fn update(presentation: &mut Presentation, msg: Message) -> Option<Message> {
 }
 
 // VIEW
-fn view(presentation: &mut Presentation, frame: &mut Frame) {
+fn view<'a>(presentation: &mut Presentation, frame: &mut Frame) {
     let area = frame.size();
     let block = Block::new()
         .borders(Borders::ALL)
-        .title(Title::from("Presento").alignment(Alignment::Center));
-    let paragraph = Paragraph::new(presentation.content());
+        .title(Title::from("Presento").alignment(Alignment::Center))
+        .title(
+            Title::from(
+                format! {"Slide {:?}/{:?}", presentation.slide_index + 1, presentation.slides.len()},
+            )
+            .position(Position::Bottom)
+            .alignment(Alignment::Right),
+        );
+    let lines = super::parser::parse(presentation.content());
+    let paragraph = Paragraph::new(lines);
     frame.render_widget(paragraph.block(block), area);
 }
 
